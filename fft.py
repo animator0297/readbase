@@ -2,11 +2,20 @@ from struct import *
 #from numeric import *
 import numpy as np
 from matplotlib import pyplot
+plt=pyplot
+
+from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
+import plotly.offline as py
+import plotly.graph_objs as go
+from plotly import tools
+
+
 plt=pyplot 
 class readbase:
+
     def __init__(self):
         self.data = []
-        self.fname='ri2248_015-1957_bdbd.base'
+        self.fname='r2182a_182-0503a_bvzv.base'
         self.fh=None
             
     
@@ -46,13 +55,10 @@ class readbase:
         min, =unpack('i', self.fh.read(4))
         sec, =unpack('i', self.fh.read(4))
         sample, =unpack('i', self.fh.read(4))
-        # self.data.append(time,year,day,hour,min,sec,sample)
         self.data += [time,year,day,hour,min,sec,sample]
 
-    #def spectra(self):
-       # self.data.time
-        #self.data.channel
-        #self.data.spectrum
+
+
         self.doc=np.zeros((time,channel,spectrum),dtype=np.complex)
         print self.doc.shape
         for i in range(time):
@@ -60,19 +66,21 @@ class readbase:
                 for k in range(spectrum):
                     self.doc[i,j,k]=complex(unpack('f', self.fh.read(4))[0],\
                                             unpack('f', self.fh.read(4))[0])
-        self.shear=self.doc[0,12,:]
-        print self.shear
-        plt.plot(self.shear)
-        plt.show()                    
-        #self.doc.append()
+        self.corr=self.doc[:,3,1021]
+        print self.corr
+        #self.h=abs(np.fft.fftshift(np.fft.ifft2(self.corr, axes=(-1,-2))))
+        self.h=abs(np.fft.ifft2(self.corr))
+        plt.plot(self.h)
+        plt.show()
+
+        #data = [go.Surface(z=self.h)]
+        #layout=go.Layout(title='delays',xaxis=dict(title='delays'),yaxis=dict(title='accumulation periods'))
+        #fig = go.Figure(data=data, layout=layout)
+        #py.plot(fig)
+
         
+       
+        #        fig.colorbar(surf, shrink=0.5, aspect=10)
+       
 
-
-        
-
-
-        
-
-
-     
-
+       
